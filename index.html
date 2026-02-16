@@ -25,7 +25,7 @@
     }
     input:focus { border-color: #6b7cff; box-shadow: 0 0 0 3px rgba(107,124,255,.15); }
     .actions { margin-top: 18px; display: flex; gap: 12px; align-items: center; }
-    button, input[type="submit"] {
+    input[type="submit"] {
       border: 0;
       background: #2f5cff;
       color: #fff;
@@ -37,7 +37,6 @@
     .hint { font-size: 12px; color: #666; }
     .full { grid-column: 1 / -1; }
     @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
-    /* honeypot */
     .hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
   </style>
 </head>
@@ -46,30 +45,24 @@
   <div class="wrap">
     <div class="card">
       <h1>Contact Us</h1>
-      <p>Fill this out and we’ll follow up.</p>
+      <p>Fill this out and we’ll log your info directly into our CRM.</p>
 
       <form
         id="w2lForm"
         action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DgK00000JpT1w"
         method="POST"
       >
-        <!-- REQUIRED -->
+        <!-- REQUIRED: Salesforce Org ID -->
         <input type="hidden" name="oid" value="00DgK00000JpT1w" />
 
-        <!-- Recommended: redirect to a public thank-you page on the same GitHub Pages site -->
-        <input type="hidden" name="retURL" id="retURL" value="" />
+        <!-- PRODUCTION REDIRECT (NO DEBUG) -->
+        <input type="hidden" name="retURL" value="https://fxdedglory.github.io/contact-me/thank-you.html" />
 
-        <!-- TURN ON TEMPORARILY: Salesforce emails you if lead creation fails -->
-        <input type="hidden" name="debug" value="1" />
-        <input type="hidden" name="debugEmail" value="sellwood.timm@gmail.com" />
-
-        <!-- Tracking: makes it easy to filter in Salesforce -->
+        <!-- TRACKING FIELDS (KEEP THESE) -->
         <input type="hidden" name="lead_source" value="GitHub Web Form" />
-
-        <!-- Tracking: searchable proof + context -->
         <input type="hidden" name="description" id="description" value="" />
 
-        <!-- Honeypot -->
+        <!-- Honeypot Anti-Spam -->
         <div class="hp" aria-hidden="true">
           <label for="company_fax">Fax</label>
           <input id="company_fax" name="company_fax" type="text" tabindex="-1" autocomplete="off" />
@@ -82,8 +75,13 @@
           </div>
 
           <div class="row">
-            <label for="last_name">Last Name</label>
+            <label for="last_name">Last Name (Required)</label>
             <input id="last_name" name="last_name" type="text" maxlength="80" autocomplete="family-name" required />
+          </div>
+
+          <div class="row">
+            <label for="email">Email (Recommended)</label>
+            <input id="email" name="email" type="email" maxlength="80" autocomplete="email" />
           </div>
 
           <div class="row">
@@ -92,17 +90,12 @@
           </div>
 
           <div class="row">
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" maxlength="80" autocomplete="email" required />
-          </div>
-
-          <div class="row">
             <label for="city">City</label>
             <input id="city" name="city" type="text" maxlength="40" autocomplete="address-level2" />
           </div>
 
           <div class="row">
-            <label for="company">Company</label>
+            <label for="company">Company (Required by Salesforce)</label>
             <input id="company" name="company" type="text" maxlength="40" autocomplete="organization" required />
           </div>
 
@@ -113,8 +106,8 @@
         </div>
 
         <div class="actions">
-          <input type="submit" name="submit" value="Submit" />
-          <span class="hint">You’ll be redirected after submit.</span>
+          <input type="submit" value="Submit" />
+          <span class="hint">You will be redirected after submission.</span>
         </div>
       </form>
     </div>
@@ -125,31 +118,19 @@
       const form = document.getElementById("w2lForm");
       const hp = document.getElementById("company_fax");
       const desc = document.getElementById("description");
-      const ret = document.getElementById("retURL");
-
-      // Set retURL to your GitHub Pages thank-you page (same origin as this page)
-      // Example: https://<user>.github.io/<repo>/thank-you.html
-      const base = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, "/");
-      ret.value = base + "thank-you.html";
 
       form.addEventListener("submit", function (e) {
-        // Block obvious bot submissions
+        // Block spam bots
         if (hp && hp.value.trim() !== "") {
           e.preventDefault();
           return;
         }
 
-        // Add a searchable marker to Description so you can prove ingestion
-        // Search in Salesforce global search for: W2L_GITHUB
-        const now = new Date();
-        const iso = now.toISOString();
-
+        // Add timestamp + source tracking into Salesforce Description field
+        const now = new Date().toISOString();
         desc.value =
-          "W2L_GITHUB | submitted_at_utc=" + iso +
-          " | page=" + window.location.href;
-
-        // (Optional) If you want to also stamp the company field, uncomment:
-        // document.getElementById("company").value = document.getElementById("company").value + " (W2L_GITHUB)";
+          "W2L_GITHUB | submitted_at_utc=" + now +
+          " | page=https://fxdedglory.github.io/contact-me/";
       });
     })();
   </script>
