@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact Us</title>
+
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { margin: 0; background: #f6f7fb; }
+    .wrap { max-width: 720px; margin: 48px auto; padding: 0 16px; }
+    .card { background: #fff; border: 1px solid #e6e7ee; border-radius: 14px; padding: 24px; box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+    h1 { margin: 0 0 6px; font-size: 24px; }
+    p { margin: 0 0 18px; color: #444; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .row { display: flex; flex-direction: column; gap: 6px; }
+    label { font-size: 13px; color: #333; }
+    input[type="text"], input[type="email"], input[type="tel"], input[type="url"] {
+      padding: 10px 12px;
+      border: 1px solid #cfd3e1;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus { border-color: #6b7cff; box-shadow: 0 0 0 3px rgba(107,124,255,.15); }
+    .actions { margin-top: 18px; display: flex; gap: 12px; align-items: center; }
+    button, input[type="submit"] {
+      border: 0;
+      background: #2f5cff;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .hint { font-size: 12px; color: #666; }
+    .full { grid-column: 1 / -1; }
+    @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+    /* honeypot */
+    .hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Contact Us</h1>
+      <p>Fill this out and we’ll follow up.</p>
+
+      <form
+        action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DgK00000JpT1w"
+        method="POST"
+      >
+        <!-- required by Salesforce -->
+        <input type="hidden" name="oid" value="00DgK00000JpT1w" />
+        <input type="hidden" name="retURL" value="https://www.linkedin.com/in/tesellwood" />
+
+        <!-- OPTIONAL: debug (turn on temporarily) -->
+        <!-- <input type="hidden" name="debug" value="1" /> -->
+        <!-- <input type="hidden" name="debugEmail" value="sellwood.timm@gmail.com" /> -->
+
+        <!-- OPTIONAL: basic spam honeypot (bots fill it; humans won't see it) -->
+        <div class="hp">
+          <label for="company_fax">Fax</label>
+          <input id="company_fax" name="company_fax" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <label for="first_name">First Name</label>
+            <input id="first_name" name="first_name" type="text" maxlength="40" autocomplete="given-name" />
+          </div>
+
+          <div class="row">
+            <label for="last_name">Last Name</label>
+            <input id="last_name" name="last_name" type="text" maxlength="80" autocomplete="family-name" required />
+          </div>
+
+          <div class="row">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" maxlength="40" autocomplete="tel" />
+          </div>
+
+          <div class="row">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" maxlength="80" autocomplete="email" required />
+          </div>
+
+          <div class="row">
+            <label for="city">City</label>
+            <input id="city" name="city" type="text" maxlength="40" autocomplete="address-level2" />
+          </div>
+
+          <div class="row">
+            <label for="company">Company</label>
+            <input id="company" name="company" type="text" maxlength="40" autocomplete="organization" required />
+          </div>
+
+          <div class="row full">
+            <label for="url">Website</label>
+            <input id="url" name="url" type="url" maxlength="80" placeholder="https://example.com" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <input type="submit" name="submit" value="Submit" />
+          <span class="hint">You’ll be redirected after submit.</span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // OPTIONAL: block submit if honeypot filled
+    document.querySelector("form").addEventListener("submit", function (e) {
+      const hp = document.getElementById("company_fax");
+      if (hp && hp.value.trim() !== "") {
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
