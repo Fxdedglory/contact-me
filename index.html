@@ -16,7 +16,7 @@
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .row { display: flex; flex-direction: column; gap: 6px; }
     label { font-size: 13px; color: #333; }
-    input[type="text"], input[type="email"], input[type="tel"], input[type="url"] {
+    input[type="text"], input[type="email"], input[type="tel"] {
       padding: 10px 12px;
       border: 1px solid #cfd3e1;
       border-radius: 10px;
@@ -38,6 +38,16 @@
     .full { grid-column: 1 / -1; }
     @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
     .hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+    .error {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border: 1px solid #f1c0c0;
+      background: #fff2f2;
+      color: #7a1f1f;
+      border-radius: 10px;
+      font-size: 13px;
+    }
   </style>
 </head>
 
@@ -45,24 +55,25 @@
   <div class="wrap">
     <div class="card">
       <h1>Contact Us</h1>
-      <p>Fill this out and we’ll log your info directly into our CRM.</p>
+      <p>Fill this out and we’ll follow up.</p>
 
       <form
         id="w2lForm"
         action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DgK00000JpT1w"
         method="POST"
+        novalidate
       >
         <!-- REQUIRED: Salesforce Org ID -->
         <input type="hidden" name="oid" value="00DgK00000JpT1w" />
 
-        <!-- PRODUCTION REDIRECT (NO DEBUG) -->
+        <!-- Redirect after successful submission -->
         <input type="hidden" name="retURL" value="https://fxdedglory.github.io/contact-me/thank-you.html" />
 
-        <!-- TRACKING FIELDS (KEEP THESE) -->
+        <!-- Tracking fields -->
         <input type="hidden" name="lead_source" value="GitHub Web Form" />
         <input type="hidden" name="description" id="description" value="" />
 
-        <!-- Honeypot Anti-Spam -->
+        <!-- Honeypot -->
         <div class="hp" aria-hidden="true">
           <label for="company_fax">Fax</label>
           <input id="company_fax" name="company_fax" type="text" tabindex="-1" autocomplete="off" />
@@ -70,8 +81,8 @@
 
         <div class="grid">
           <div class="row">
-            <label for="first_name">First Name</label>
-            <input id="first_name" name="first_name" type="text" maxlength="40" autocomplete="given-name" />
+            <label for="first_name">First Name (Required)</label>
+            <input id="first_name" name="first_name" type="text" maxlength="40" autocomplete="given-name" required />
           </div>
 
           <div class="row">
@@ -80,34 +91,31 @@
           </div>
 
           <div class="row">
-            <label for="email">Email (Recommended)</label>
-            <input id="email" name="email" type="email" maxlength="80" autocomplete="email" />
-          </div>
-
-          <div class="row">
-            <label for="phone">Phone</label>
+            <label for="phone">Phone (Phone OR Email required)</label>
             <input id="phone" name="phone" type="tel" maxlength="40" autocomplete="tel" />
           </div>
 
           <div class="row">
-            <label for="city">City</label>
+            <label for="email">Email (Phone OR Email required)</label>
+            <input id="email" name="email" type="email" maxlength="80" autocomplete="email" />
+          </div>
+
+          <div class="row">
+            <label for="city">City (Optional)</label>
             <input id="city" name="city" type="text" maxlength="40" autocomplete="address-level2" />
           </div>
 
           <div class="row">
-            <label for="company">Company (Required by Salesforce)</label>
-            <input id="company" name="company" type="text" maxlength="40" autocomplete="organization" required />
-          </div>
-
-          <div class="row full">
-            <label for="url">Website</label>
-            <input id="url" name="url" type="url" maxlength="80" placeholder="https://example.com" />
+            <label for="company">Company (Optional)</label>
+            <input id="company" name="company" type="text" maxlength="40" autocomplete="organization" />
           </div>
         </div>
 
+        <div id="formError" class="error"></div>
+
         <div class="actions">
           <input type="submit" value="Submit" />
-          <span class="hint">You will be redirected after submission.</span>
+          <span class="hint">You’ll be redirected after submission.</span>
         </div>
       </form>
     </div>
@@ -118,15 +126,52 @@
       const form = document.getElementById("w2lForm");
       const hp = document.getElementById("company_fax");
       const desc = document.getElementById("description");
+      const errBox = document.getElementById("formError");
+
+      const firstName = document.getElementById("first_name");
+      const lastName  = document.getElementById("last_name");
+      const phone     = document.getElementById("phone");
+      const email     = document.getElementById("email");
+
+      function showError(msg) {
+        errBox.textContent = msg;
+        errBox.style.display = "block";
+      }
+
+      function clearError() {
+        errBox.textContent = "";
+        errBox.style.display = "none";
+      }
+
+      function isBlank(v) { return !v || v.trim() === ""; }
 
       form.addEventListener("submit", function (e) {
-        // Block spam bots
+        clearError();
+
+        // Honeypot: block bots silently
         if (hp && hp.value.trim() !== "") {
           e.preventDefault();
           return;
         }
 
-        // Add timestamp + source tracking into Salesforce Description field
+        // Required: First + Last
+        if (isBlank(firstName.value) || isBlank(lastName.value)) {
+          e.preventDefault();
+          showError("Please enter both First Name and Last Name.");
+          return;
+        }
+
+        // Required: Phone OR Email (at least one)
+        const hasPhone = !isBlank(phone.value);
+        const hasEmail = !isBlank(email.value);
+
+        if (!hasPhone && !hasEmail) {
+          e.preventDefault();
+          showError("Please provide at least one way to contact you: Phone or Email.");
+          return;
+        }
+
+        // Tracking marker for Salesforce Description
         const now = new Date().toISOString();
         desc.value =
           "W2L_GITHUB | submitted_at_utc=" + now +
