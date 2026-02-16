@@ -16,6 +16,13 @@
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .row { display: flex; flex-direction: column; gap: 6px; }
     label { font-size: 13px; color: #333; }
+
+    .req {
+      color: #d32f2f;
+      margin-left: 4px;
+      font-weight: 700;
+    }
+
     input[type="text"], input[type="email"], input[type="tel"] {
       padding: 10px 12px;
       border: 1px solid #cfd3e1;
@@ -81,32 +88,32 @@
 
         <div class="grid">
           <div class="row">
-            <label for="first_name">First Name (Required)</label>
-            <input id="first_name" name="first_name" type="text" maxlength="40" autocomplete="given-name" required />
+            <label for="first_name">First Name<span class="req" aria-hidden="true">*</span></label>
+            <input id="first_name" name="first_name" type="text" maxlength="40" autocomplete="given-name" required aria-required="true" />
           </div>
 
           <div class="row">
-            <label for="last_name">Last Name (Required)</label>
-            <input id="last_name" name="last_name" type="text" maxlength="80" autocomplete="family-name" required />
+            <label for="last_name">Last Name<span class="req" aria-hidden="true">*</span></label>
+            <input id="last_name" name="last_name" type="text" maxlength="80" autocomplete="family-name" required aria-required="true" />
           </div>
 
           <div class="row">
-            <label for="phone">Phone (Phone OR Email required)</label>
+            <label for="phone">Phone</label>
             <input id="phone" name="phone" type="tel" maxlength="40" autocomplete="tel" />
           </div>
 
           <div class="row">
-            <label for="email">Email (Phone OR Email required)</label>
-            <input id="email" name="email" type="email" maxlength="80" autocomplete="email" />
+            <label for="email">Email<span class="req" aria-hidden="true">*</span></label>
+            <input id="email" name="email" type="email" maxlength="80" autocomplete="email" required aria-required="true" />
           </div>
 
           <div class="row">
-            <label for="city">City (Optional)</label>
+            <label for="city">City</label>
             <input id="city" name="city" type="text" maxlength="40" autocomplete="address-level2" />
           </div>
 
           <div class="row">
-            <label for="company">Company (Optional)</label>
+            <label for="company">Company</label>
             <input id="company" name="company" type="text" maxlength="40" autocomplete="organization" />
           </div>
         </div>
@@ -130,7 +137,6 @@
 
       const firstName = document.getElementById("first_name");
       const lastName  = document.getElementById("last_name");
-      const phone     = document.getElementById("phone");
       const email     = document.getElementById("email");
 
       function showError(msg) {
@@ -154,20 +160,10 @@
           return;
         }
 
-        // Required: First + Last
-        if (isBlank(firstName.value) || isBlank(lastName.value)) {
+        // Required: First + Last + Email
+        if (isBlank(firstName.value) || isBlank(lastName.value) || isBlank(email.value)) {
           e.preventDefault();
-          showError("Please enter both First Name and Last Name.");
-          return;
-        }
-
-        // Required: Phone OR Email (at least one)
-        const hasPhone = !isBlank(phone.value);
-        const hasEmail = !isBlank(email.value);
-
-        if (!hasPhone && !hasEmail) {
-          e.preventDefault();
-          showError("Please provide at least one way to contact you: Phone or Email.");
+          showError("Please enter First Name, Last Name, and Email.");
           return;
         }
 
