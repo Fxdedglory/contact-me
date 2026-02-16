@@ -49,19 +49,28 @@
       <p>Fill this out and we’ll follow up.</p>
 
       <form
+        id="w2lForm"
         action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DgK00000JpT1w"
         method="POST"
       >
-        <!-- required by Salesforce -->
+        <!-- REQUIRED -->
         <input type="hidden" name="oid" value="00DgK00000JpT1w" />
-        <input type="hidden" name="retURL" value="https://www.linkedin.com/in/tesellwood" />
 
-        <!-- OPTIONAL: debug (turn on temporarily) -->
-        <!-- <input type="hidden" name="debug" value="1" /> -->
-        <!-- <input type="hidden" name="debugEmail" value="sellwood.timm@gmail.com" /> -->
+        <!-- Recommended: redirect to a public thank-you page on the same GitHub Pages site -->
+        <input type="hidden" name="retURL" id="retURL" value="" />
 
-        <!-- OPTIONAL: basic spam honeypot (bots fill it; humans won't see it) -->
-        <div class="hp">
+        <!-- TURN ON TEMPORARILY: Salesforce emails you if lead creation fails -->
+        <input type="hidden" name="debug" value="1" />
+        <input type="hidden" name="debugEmail" value="sellwood.timm@gmail.com" />
+
+        <!-- Tracking: makes it easy to filter in Salesforce -->
+        <input type="hidden" name="lead_source" value="GitHub Web Form" />
+
+        <!-- Tracking: searchable proof + context -->
+        <input type="hidden" name="description" id="description" value="" />
+
+        <!-- Honeypot -->
+        <div class="hp" aria-hidden="true">
           <label for="company_fax">Fax</label>
           <input id="company_fax" name="company_fax" type="text" tabindex="-1" autocomplete="off" />
         </div>
@@ -112,13 +121,37 @@
   </div>
 
   <script>
-    // OPTIONAL: block submit if honeypot filled
-    document.querySelector("form").addEventListener("submit", function (e) {
+    (function () {
+      const form = document.getElementById("w2lForm");
       const hp = document.getElementById("company_fax");
-      if (hp && hp.value.trim() !== "") {
-        e.preventDefault();
-      }
-    });
+      const desc = document.getElementById("description");
+      const ret = document.getElementById("retURL");
+
+      // Set retURL to your GitHub Pages thank-you page (same origin as this page)
+      // Example: https://<user>.github.io/<repo>/thank-you.html
+      const base = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, "/");
+      ret.value = base + "thank-you.html";
+
+      form.addEventListener("submit", function (e) {
+        // Block obvious bot submissions
+        if (hp && hp.value.trim() !== "") {
+          e.preventDefault();
+          return;
+        }
+
+        // Add a searchable marker to Description so you can prove ingestion
+        // Search in Salesforce global search for: W2L_GITHUB
+        const now = new Date();
+        const iso = now.toISOString();
+
+        desc.value =
+          "W2L_GITHUB | submitted_at_utc=" + iso +
+          " | page=" + window.location.href;
+
+        // (Optional) If you want to also stamp the company field, uncomment:
+        // document.getElementById("company").value = document.getElementById("company").value + " (W2L_GITHUB)";
+      });
+    })();
   </script>
 </body>
 </html>
