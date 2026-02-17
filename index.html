@@ -4,65 +4,75 @@
   <meta charset="UTF-8" />
   <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Contact Us</title>
+  <title>Contact Tim Sellwood | Data Engineer</title>
 
   <style>
     :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
     body { margin: 0; background: #f6f7fb; }
-    .wrap { max-width: 720px; margin: 48px auto; padding: 0 16px; }
-    .card { background: #fff; border: 1px solid #e6e7ee; border-radius: 14px; padding: 24px; box-shadow: 0 6px 18px rgba(0,0,0,.06); }
-    h1 { margin: 0 0 6px; font-size: 24px; }
-    p { margin: 0 0 18px; color: #444; }
+    .wrap { max-width: 760px; margin: 48px auto; padding: 0 16px; }
+    .card {
+      background: #fff;
+      border: 1px solid #e6e7ee;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.08);
+    }
+    h1 { margin: 0 0 8px; font-size: 26px; }
+    p { margin: 0 0 18px; color: #444; line-height: 1.5; }
+    .highlight { color: #2f5cff; font-weight: 600; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .row { display: flex; flex-direction: column; gap: 6px; }
     label { font-size: 13px; color: #333; }
+    .req { color: #d32f2f; margin-left: 4px; font-weight: 700; }
 
-    .req {
-      color: #d32f2f;
-      margin-left: 4px;
-      font-weight: 700;
-    }
-
-    input[type="text"], input[type="email"], input[type="tel"] {
-      padding: 10px 12px;
+    input, select {
+      padding: 11px 12px;
       border: 1px solid #cfd3e1;
       border-radius: 10px;
       font-size: 14px;
       outline: none;
     }
-    input:focus { border-color: #6b7cff; box-shadow: 0 0 0 3px rgba(107,124,255,.15); }
-    .actions { margin-top: 18px; display: flex; gap: 12px; align-items: center; }
+    input:focus, select:focus {
+      border-color: #2f5cff;
+      box-shadow: 0 0 0 3px rgba(47,92,255,.15);
+    }
+
+    .actions { margin-top: 20px; display: flex; gap: 12px; align-items: center; }
     input[type="submit"] {
       border: 0;
       background: #2f5cff;
       color: #fff;
-      padding: 10px 14px;
+      padding: 12px 18px;
       border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
+      font-size: 15px;
     }
     .hint { font-size: 12px; color: #666; }
     .full { grid-column: 1 / -1; }
-    @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
-    .hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
     .error {
       display: none;
-      margin-top: 12px;
-      padding: 10px 12px;
+      margin-top: 14px;
+      padding: 12px;
       border: 1px solid #f1c0c0;
       background: #fff2f2;
       color: #7a1f1f;
       border-radius: 10px;
       font-size: 13px;
     }
+    .hp { position: absolute; left: -10000px; }
+    @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>Contact Us</h1>
-      <p>Fill this out and we’ll follow up.</p>
+      <h1>Connect with Tim Sellwood</h1>
+      <p>
+        Interested in discussing a <span class="highlight">Data Engineering, Analytics, or AI role</span>?
+        Fill out the form below and you’ll receive my resume and calendar availability instantly.
+      </p>
 
       <form
         id="w2lForm"
@@ -70,59 +80,56 @@
         method="POST"
         novalidate
       >
-        <!-- REQUIRED: Salesforce Org ID -->
+        <!-- REQUIRED -->
         <input type="hidden" name="oid" value="00DgK00000JpT1w" />
-
-        <!-- Redirect after successful submission -->
         <input type="hidden" name="retURL" value="https://fxdedglory.github.io/contact-me/thank-you.html" />
 
-        <!-- Tracking fields -->
-        <input type="hidden" name="lead_source" value="GitHub Web Form" />
+        <!-- CRM Tracking -->
+        <input type="hidden" name="lead_source" value="Web" />
         <input type="hidden" name="description" id="description" value="" />
 
-        <!-- Honeypot -->
-        <div class="hp" aria-hidden="true">
-          <label for="company_fax">Fax</label>
+        <!-- Honeypot (spam protection) -->
+        <div class="hp">
           <input id="company_fax" name="company_fax" type="text" tabindex="-1" autocomplete="off" />
         </div>
 
         <div class="grid">
           <div class="row">
-            <label for="first_name">First Name<span class="req" aria-hidden="true">*</span></label>
-            <input id="first_name" name="first_name" type="text" maxlength="40" autocomplete="given-name" required aria-required="true" />
+            <label>First Name<span class="req">*</span></label>
+            <input id="first_name" name="first_name" type="text" required />
           </div>
 
           <div class="row">
-            <label for="last_name">Last Name<span class="req" aria-hidden="true">*</span></label>
-            <input id="last_name" name="last_name" type="text" maxlength="80" autocomplete="family-name" required aria-required="true" />
+            <label>Last Name<span class="req">*</span></label>
+            <input id="last_name" name="last_name" type="text" required />
           </div>
 
           <div class="row">
-            <label for="phone">Phone</label>
-            <input id="phone" name="phone" type="tel" maxlength="40" autocomplete="tel" />
+            <label>Email</label>
+            <input id="email" name="email" type="email" />
           </div>
 
           <div class="row">
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" maxlength="80" autocomplete="email" />
+            <label>Phone</label>
+            <input id="phone" name="phone" type="tel" />
           </div>
 
-          <div class="row">
-            <label for="city">City</label>
-            <input id="city" name="city" type="text" maxlength="40" autocomplete="address-level2" />
+          <div class="row full">
+            <label>Company / Organization</label>
+            <input id="company" name="company" type="text" placeholder="Optional (auto-filled if blank)" />
           </div>
 
-          <div class="row">
-            <label for="company">Company</label>
-            <input id="company" name="company" type="text" maxlength="40" autocomplete="organization" />
+          <div class="row full">
+            <label>Message (Optional)</label>
+            <input id="city" name="city" type="text" placeholder="Role, company, or context (e.g. Data Engineer role)" />
           </div>
         </div>
 
         <div id="formError" class="error"></div>
 
         <div class="actions">
-          <input type="submit" value="Submit" />
-          <span class="hint">You’ll be redirected after submission.</span>
+          <input type="submit" value="Send & Receive Resume + Calendar" />
+          <span class="hint">You’ll receive an automated email with resume & scheduling link.</span>
         </div>
       </form>
     </div>
@@ -133,62 +140,45 @@
       const form = document.getElementById("w2lForm");
       const hp = document.getElementById("company_fax");
       const desc = document.getElementById("description");
-      const errBox = document.getElementById("formError");
+      const err = document.getElementById("formError");
 
-      const firstName = document.getElementById("first_name");
-      const lastName  = document.getElementById("last_name");
-      const phone     = document.getElementById("phone");
-      const email     = document.getElementById("email");
-      const company   = document.getElementById("company");
+      const first = document.getElementById("first_name");
+      const last = document.getElementById("last_name");
+      const email = document.getElementById("email");
+      const phone = document.getElementById("phone");
+      const company = document.getElementById("company");
 
-      function showError(msg) {
-        errBox.textContent = msg;
-        errBox.style.display = "block";
-      }
+      function isBlank(v){ return !v || v.trim() === ""; }
 
-      function clearError() {
-        errBox.textContent = "";
-        errBox.style.display = "none";
-      }
+      form.addEventListener("submit", function(e){
+        err.style.display = "none";
 
-      function isBlank(v) { return !v || v.trim() === ""; }
-
-      form.addEventListener("submit", function (e) {
-        clearError();
-
-        // Honeypot: block bots silently
-        if (hp && hp.value.trim() !== "") {
+        if (hp.value.trim() !== "") {
           e.preventDefault();
           return;
         }
 
-        // Required: First + Last
-        if (isBlank(firstName.value) || isBlank(lastName.value)) {
+        if (isBlank(first.value) || isBlank(last.value)) {
           e.preventDefault();
-          showError("Please enter First Name and Last Name.");
+          err.textContent = "First and Last Name are required.";
+          err.style.display = "block";
           return;
         }
 
-        // Required: Phone OR Email (at least one)
-        const hasPhone = !isBlank(phone.value);
-        const hasEmail = !isBlank(email.value);
-
-        if (!hasPhone && !hasEmail) {
+        if (isBlank(email.value) && isBlank(phone.value)) {
           e.preventDefault();
-          showError("Please provide at least one way to contact you: Phone or Email.");
+          err.textContent = "Please provide either Email or Phone.";
+          err.style.display = "block";
           return;
         }
 
-        // CRITICAL: Salesforce Lead requires Company. If user leaves it blank, auto-fill.
         if (isBlank(company.value)) {
-          company.value = "Website Lead";
+          company.value = "Portfolio Lead";
         }
 
-        // Tracking marker for Salesforce Description
-        const now = new Date().toISOString();
         desc.value =
-          "W2L_GITHUB | submitted_at_utc=" + now +
-          " | page=https://fxdedglory.github.io/contact-me/";
+          "PORTFOLIO_LEAD | domain=teemails.com | page=github_pages | submitted_at=" +
+          new Date().toISOString();
       });
     })();
   </script>
