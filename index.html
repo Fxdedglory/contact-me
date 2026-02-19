@@ -73,21 +73,17 @@
   <div class="wrap">
     <div class="card">
       <h1>Contact Tim Sellwood</h1>
-      <p>
-        Fill out the form below. You’ll be redirected to a confirmation page after submission.
-      </p>
+      <p>Fill out the form below. You’ll be redirected to a confirmation page after submission.</p>
 
       <!--
-        DEBUG MODE (use temporarily while testing):
-        Add: ?debug=1&debugEmail=YOUR_EMAIL to the action URL.
-        Example:
-        action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&debug=1&debugEmail=tesellwood5230@gmail.com"
-        This will show the exact reason Salesforce rejected the Lead.
+        TEMP DEBUG MODE (recommended while troubleshooting):
+        debug=1&debugEmail=... makes Salesforce send extra diagnostics emails on reject.
+        REMOVE these params once stable.
       -->
 
       <form
         id="w2lForm"
-        action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8"
+        action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&debug=1&debugEmail=tesellwood5230@gmail.com"
         method="POST"
         novalidate
       >
@@ -95,12 +91,12 @@
         <input type="hidden" name="oid" value="00DgL00000LB62n" />
         <input type="hidden" name="retURL" value="https://fxdedglory.github.io/contact-me/thank-you.html" />
 
-        <!-- Tracking / defaults -->
+        <!-- Defaults / routing -->
         <input type="hidden" name="lead_source" value="Web" />
-        <input type="hidden" name="description" id="description" value="" />
+        <input type="hidden" name="status" value="New" />
 
-        <!-- OPTIONAL: If you use an assignment rule and need to force it -->
-        <!-- <input type="hidden" name="assign" value="1" /> -->
+        <!-- Tracking -->
+        <input type="hidden" name="description" id="description" value="" />
 
         <!-- Honeypot (spam protection). Bots fill this; humans won't. -->
         <div class="hp" aria-hidden="true">
@@ -135,9 +131,6 @@
           </div>
 
           <div class="row full">
-            <!-- Using the standard Lead City field as your “message” is confusing.
-                 If you want a message field, ideally create a custom Lead field (e.g., Message__c).
-                 For now, we'll keep your existing behavior but label it clearly. -->
             <label for="city">Message (Optional)</label>
             <input id="city" name="city" type="text" placeholder="Role, company, or context" />
           </div>
@@ -161,11 +154,14 @@
       const err = document.getElementById("formError");
 
       const first = document.getElementById("first_name");
-      const last = document.getElementById("last_name");
+      const last  = document.getElementById("last_name");
       const email = document.getElementById("email");
       const company = document.getElementById("company");
 
       function isBlank(v) { return !v || v.trim() === ""; }
+
+      // Change this when you redeploy so you can confirm GitHub Pages is serving the new version.
+      const FORM_VERSION = "contact-me_w2l_v20260219_2146";
 
       form.addEventListener("submit", function (e) {
         err.style.display = "none";
@@ -190,14 +186,18 @@
           company.value = "Portfolio Lead";
         }
 
-        // Helpful description for triage
+        // Deterministic tracking for CLI queries + proof of deployed version
         const payload = {
           tag: "PORTFOLIO_LEAD",
+          version: FORM_VERSION,
+          org_oid: "00DgL00000LB62n",
           domain: "teemails.com",
           page: "github_pages",
           submitted_at: new Date().toISOString()
         };
-        desc.value = `${payload.tag} | domain=${payload.domain} | page=${payload.page} | submitted_at=${payload.submitted_at}`;
+
+        desc.value =
+          `${payload.tag} | version=${payload.version} | oid=${payload.org_oid} | domain=${payload.domain} | page=${payload.page} | submitted_at=${payload.submitted_at}`;
       });
     })();
   </script>
