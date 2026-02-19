@@ -155,7 +155,19 @@
       function isBlank(v) { return !v || v.trim() === ""; }
 
       const OID_18 = "00DgL00000LB62nUAD";
-      const FORM_VERSION = "contact-me_w2l_v20260219_2226";
+      const FORM_VERSION = "contact-me_w2l_v20260219_2233";
+
+      function addGmailPlusAliasIfNeeded(addr) {
+        const a = (addr || "").trim();
+        if (!a) return a;
+
+        // Only guard the one email you keep testing with.
+        if (a.toLowerCase() === "tesellwood@gmail.com") {
+          const hhmmss = new Date().toISOString().slice(11,19).replaceAll(":","");
+          return `tesellwood+gh${hhmmss}@gmail.com`;
+        }
+        return a;
+      }
 
       form.addEventListener("submit", function (e) {
         err.style.display = "none";
@@ -174,6 +186,9 @@
           err.style.display = "block";
           return;
         }
+
+        // Force unique test email (prevents duplicate-rule blocks while testing)
+        email.value = addGmailPlusAliasIfNeeded(email.value);
 
         // Salesforce Lead Company is required.
         if (isBlank(company.value)) {
