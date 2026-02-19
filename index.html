@@ -75,12 +75,6 @@
       <h1>Contact Tim Sellwood</h1>
       <p>Fill out the form below. You’ll be redirected to a confirmation page after submission.</p>
 
-      <!--
-        TEMP DEBUG MODE (recommended while troubleshooting):
-        debug=1&debugEmail=... makes Salesforce send extra diagnostics emails on reject.
-        REMOVE these params once stable.
-      -->
-
       <form
         id="w2lForm"
         action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8"
@@ -160,8 +154,8 @@
 
       function isBlank(v) { return !v || v.trim() === ""; }
 
-      // Change this when you redeploy so you can confirm GitHub Pages is serving the new version.
-      const FORM_VERSION = "contact-me_w2l_v20260219_2146";
+      const OID_18 = "00DgL00000LB62nUAD";
+      const FORM_VERSION = "contact-me_w2l_v20260219_2226";
 
       form.addEventListener("submit", function (e) {
         err.style.display = "none";
@@ -186,18 +180,17 @@
           company.value = "Portfolio Lead";
         }
 
-        // Deterministic tracking for CLI queries + proof of deployed version
         const payload = {
           tag: "PORTFOLIO_LEAD",
           version: FORM_VERSION,
-          org_oid: "00DgL00000LB62n",
+          oid: OID_18,
           domain: "teemails.com",
           page: "github_pages",
           submitted_at: new Date().toISOString()
         };
 
         desc.value =
-          `${payload.tag} | version=${payload.version} | oid=${payload.org_oid} | domain=${payload.domain} | page=${payload.page} | submitted_at=${payload.submitted_at}`;
+          `${payload.tag} | version=${payload.version} | oid=${payload.oid} | domain=${payload.domain} | page=${payload.page} | submitted_at=${payload.submitted_at}`;
       });
     })();
   </script>
