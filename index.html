@@ -76,138 +76,96 @@
       <p>Fill out the form below. You’ll be redirected to a confirmation page after submission.</p>
 
       <form
-        id="w2lForm"
-        action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8"
-        method="POST"
-        novalidate
-      >
-        <!-- REQUIRED by Salesforce -->
-        <input type="hidden" name="oid" value="00DgL00000LB62nUAD" />
-        <input type="hidden" name="retURL" value="https://fxdedglory.github.io/contact-me/thank-you.html" />
+  id="w2lForm"
+  action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8"
+  method="POST"
+  novalidate
+>
+  <input type="hidden" name="oid" value="00DgL00000LB62nUAD" />
+  <input type="hidden" name="retURL" value="https://fxdedglory.github.io/contact-me/thank-you.html" />
 
-        <!-- Defaults / routing -->
-        <input type="hidden" name="lead_source" value="Web" />
-        <input type="hidden" name="status" value="New" />
+  <input type="hidden" name="lead_source" value="Web" />
+  <input type="hidden" name="status" value="New" />
+  <input type="hidden" name="description" id="description" value="" />
 
-        <!-- Tracking -->
-        <input type="hidden" name="description" id="description" value="" />
-
-        <!-- Honeypot (spam protection). Bots fill this; humans won't. -->
-        <div class="hp" aria-hidden="true">
-          <label for="company_fax">Company Fax</label>
-          <input id="company_fax" name="company_fax" type="text" tabindex="-1" autocomplete="off" />
-        </div>
-
-        <div class="grid">
-          <div class="row">
-            <label for="first_name">First Name<span class="req">*</span></label>
-            <input id="first_name" name="first_name" type="text" required autocomplete="given-name" />
-          </div>
-
-          <div class="row">
-            <label for="last_name">Last Name<span class="req">*</span></label>
-            <input id="last_name" name="last_name" type="text" required autocomplete="family-name" />
-          </div>
-
-          <div class="row">
-            <label for="email">Email<span class="req">*</span></label>
-            <input id="email" name="email" type="email" required autocomplete="email" />
-          </div>
-
-          <div class="row">
-            <label for="phone">Phone (Optional)</label>
-            <input id="phone" name="phone" type="tel" autocomplete="tel" />
-          </div>
-
-          <div class="row full">
-            <label for="company">Company / Organization (Optional)</label>
-            <input id="company" name="company" type="text" placeholder="If blank, defaults to Portfolio Lead" />
-          </div>
-
-          <div class="row full">
-            <label for="city">Message (Optional)</label>
-            <input id="city" name="city" type="text" placeholder="Role, company, or context" />
-          </div>
-        </div>
-
-        <div id="formError" class="error"></div>
-
-        <div class="actions">
-          <button type="submit">Submit</button>
-          <span class="hint">Fields marked with * are required.</span>
-        </div>
-      </form>
-    </div>
+  <div class="hp" aria-hidden="true">
+    <label for="company_fax">Company Fax</label>
+    <input id="company_fax" name="company_fax" type="text" tabindex="-1" autocomplete="off" />
   </div>
 
-  <script>
-    (function () {
-      const form = document.getElementById("w2lForm");
-      const hp = document.getElementById("company_fax");
-      const desc = document.getElementById("description");
-      const err = document.getElementById("formError");
+  <!-- (keep your input grid exactly as-is) -->
+</form>
 
-      const first = document.getElementById("first_name");
-      const last  = document.getElementById("last_name");
-      const email = document.getElementById("email");
-      const company = document.getElementById("company");
+<script>
+  (function () {
+    const form = document.getElementById("w2lForm");
+    const hp = document.getElementById("company_fax");
+    const desc = document.getElementById("description");
+    const err = document.getElementById("formError");
 
-      function isBlank(v) { return !v || v.trim() === ""; }
+    const first = document.getElementById("first_name");
+    const last  = document.getElementById("last_name");
+    const email = document.getElementById("email");
+    const company = document.getElementById("company");
 
-      const OID_18 = "00DgL00000LB62nUAD";
-      const FORM_VERSION = "contact-me_w2l_v20260219_2233";
+    function isBlank(v) { return !v || v.trim() === ""; }
 
-      function addGmailPlusAliasIfNeeded(addr) {
-        const a = (addr || "").trim();
-        if (!a) return a;
+    const OID_18 = "00DgL00000LB62nUAD";
+    const FORM_VERSION = "contact-me_w2l_v20260219_2239";
 
-        // Only guard the one email you keep testing with.
-        if (a.toLowerCase() === "tesellwood@gmail.com") {
-          const hhmmss = new Date().toISOString().slice(11,19).replaceAll(":","");
-          return `tesellwood+gh${hhmmss}@gmail.com`;
-        }
-        return a;
+    // ALWAYS submit to non-debug unless the PAGE url includes ?debug=1
+    const baseAction = "https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8";
+    const debugAction = "https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&debug=1&debugEmail=tesellwood5230@gmail.com";
+    const pageParams = new URLSearchParams(window.location.search);
+    form.action = pageParams.get("debug") === "1" ? debugAction : baseAction;
+
+    function forceUniqueEmail(addr) {
+      const a = (addr || "").trim();
+      if (!a) return a;
+
+      // Never test with plain tesellwood@gmail.com again (duplicate rules / noise)
+      if (a.toLowerCase() === "tesellwood@gmail.com") {
+        const hhmmss = new Date().toISOString().slice(11,19).replaceAll(":","");
+        return `tesellwood+gh${hhmmss}@gmail.com`;
+      }
+      return a;
+    }
+
+    form.addEventListener("submit", function (e) {
+      err.style.display = "none";
+      err.textContent = "";
+
+      if (hp.value.trim() !== "") {
+        e.preventDefault();
+        return;
       }
 
-      form.addEventListener("submit", function (e) {
-        err.style.display = "none";
-        err.textContent = "";
+      if (isBlank(first.value) || isBlank(last.value) || isBlank(email.value)) {
+        e.preventDefault();
+        err.textContent = "First Name, Last Name, and Email are required.";
+        err.style.display = "block";
+        return;
+      }
 
-        // Honeypot
-        if (hp.value.trim() !== "") {
-          e.preventDefault();
-          return;
-        }
+      email.value = forceUniqueEmail(email.value);
 
-        // Required checks
-        if (isBlank(first.value) || isBlank(last.value) || isBlank(email.value)) {
-          e.preventDefault();
-          err.textContent = "First Name, Last Name, and Email are required.";
-          err.style.display = "block";
-          return;
-        }
+      if (isBlank(company.value)) {
+        company.value = "Portfolio Lead";
+      }
 
-        // Force unique test email (prevents duplicate-rule blocks while testing)
-        email.value = addGmailPlusAliasIfNeeded(email.value);
+      const payload = {
+        tag: "PORTFOLIO_LEAD",
+        version: FORM_VERSION,
+        oid: OID_18,
+        domain: "teemails.com",
+        page: "github_pages",
+        submitted_at: new Date().toISOString()
+      };
 
-        // Salesforce Lead Company is required.
-        if (isBlank(company.value)) {
-          company.value = "Portfolio Lead";
-        }
-
-        const payload = {
-          tag: "PORTFOLIO_LEAD",
-          version: FORM_VERSION,
-          oid: OID_18,
-          domain: "teemails.com",
-          page: "github_pages",
-          submitted_at: new Date().toISOString()
-        };
-
-        desc.value =
-          `${payload.tag} | version=${payload.version} | oid=${payload.oid} | domain=${payload.domain} | page=${payload.page} | submitted_at=${payload.submitted_at}`;
-      });
-    })();
-  </script>
+      desc.value =
+        `${payload.tag} | version=${payload.version} | oid=${payload.oid} | domain=${payload.domain} | page=${payload.page} | submitted_at=${payload.submitted_at}`;
+    });
+  })();
+</script>
 </body>
 </html>
